@@ -1,5 +1,5 @@
 {
-  "name": "react-split-pane",
+  "name": "react-split-pane-vw",
   "description": "React split-pane component",
   "main": "index.js",
   "types": "index.d.ts",
