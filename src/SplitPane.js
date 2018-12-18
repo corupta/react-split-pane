@@ -2,7 +2,7 @@ import React, { Component, cloneElement } from 'react';
 import PropTypes from 'prop-types';
 
 import glamorous from 'glamorous';
-import Resizer from './Resizer';
+import Resizer, { supportsPassiveEvent } from './Resizer';
 import Pane from './Pane';
 
 const DEFAULT_PANE_SIZE = '1';
@@ -121,11 +121,13 @@ class SplitPane extends Component {
   }
 
   componentWillUnmount() {
+    const opts = supportsPassiveEvent ? { passive: false } : false;
+
     document.removeEventListener('mouseup', this.onMouseUp);
     document.removeEventListener('mousemove', this.onMouseMove);
 
-    document.removeEventListener('touchmove', this.onTouchMove);
-    document.removeEventListener('touchend', this.onMouseUp);
+    document.removeEventListener('touchmove', this.onTouchMove, opts);
+    document.removeEventListener('touchend', this.onMouseUp, opts);
   }
 
   onMouseDown = (event, resizerIndex) => {
@@ -158,12 +160,14 @@ class SplitPane extends Component {
     this.startClientX = clientX;
     this.startClientY = clientY;
 
+    const opts = supportsPassiveEvent ? { passive: false } : false;
+
     document.addEventListener('mousemove', this.onMouseMove);
     document.addEventListener('mouseup', this.onMouseUp);
 
-    document.addEventListener('touchmove', this.onTouchMove);
-    document.addEventListener('touchend', this.onMouseUp);
-    document.addEventListener('touchcancel', this.onMouseUp);
+    document.addEventListener('touchmove', this.onTouchMove, opts);
+    document.addEventListener('touchend', this.onMouseUp, opts);
+    document.addEventListener('touchcancel', this.onMouseUp, opts);
 
     if (onResizeStart) {
       onResizeStart();
@@ -187,12 +191,14 @@ class SplitPane extends Component {
   onMouseUp = event => {
     event.preventDefault();
 
+    const opts = supportsPassiveEvent ? { passive: false } : false;
+
     document.removeEventListener('mouseup', this.onMouseUp);
     document.removeEventListener('mousemove', this.onMouseMove);
 
-    document.removeEventListener('touchmove', this.onTouchMove);
-    document.removeEventListener('touchend', this.onMouseUp);
-    document.addEventListener('touchcancel', this.onMouseUp);
+    document.removeEventListener('touchmove', this.onTouchMove, opts);
+    document.removeEventListener('touchend', this.onMouseUp, opts);
+    document.removeEventListener('touchcancel', this.onMouseUp, opts);
 
     if (this.props.onResizeEnd) {
       this.props.onResizeEnd(this.state.sizes);

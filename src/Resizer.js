@@ -12,6 +12,8 @@ try {
   window.removeEventListener('testPassive', null, opts);
 } catch (e) {}
 
+export { supportsPassiveEvent };
+
 const Wrapper = styled.div`
   background: #000;
   opacity: 0.2;
