@@ -67,7 +67,6 @@ const VerticalWrapper = styled(Wrapper)`
 class Resizer extends Component {
   componentDidMount() {
     const opts = supportsPassiveEvent ? { passive: false } : false;
-    console.log('this resizer', this.resizer);
     this.resizer.addEventListener('touchstart', this.handleTouchStart, opts);
     this.resizer.addEventListener('touchend', this.handleTouchEnd, opts);
   }
