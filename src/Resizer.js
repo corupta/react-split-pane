@@ -1,6 +1,17 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 
+let supportsPassiveEvent = false;
+try {
+  const opts = Object.defineProperty({}, 'passive', {
+    get() {
+      supportsPassiveEvent = true;
+    }
+  });
+  window.addEventListener('testPassive', null, opts);
+  window.removeEventListener('testPassive', null, opts);
+} catch (e) {}
+
 const Wrapper = styled.div`
   background: #000;
   opacity: 0.2;
@@ -54,48 +65,66 @@ const VerticalWrapper = styled(Wrapper)`
 `;
 
 class Resizer extends Component {
+  componentDidMount() {
+    const opts = supportsPassiveEvent ? { passive: false } : false;
+    this.resizer.addEventListener('touchstart', this.handleTouchStart, opts);
+    this.resizer.addEventListener('touchend', this.handleTouchEnd, opts);
+  }
+  componentWillUnmount() {
+    const opts = supportsPassiveEvent ? { passive: false } : false;
+    this.resizer.removeEventListener('touchstart', this.handleTouchStart, opts);
+    this.resizer.removeEventListener('touchend', this.handleTouchEnd, opts);
+  }
+  handleTouchStart = (event) => {
+    const { index, onTouchStart = () => {} } = this.props;
+    event.preventDefault();
+    onTouchStart(event, index);
+  };
+  handleTouchEnd = (event) => {
+    const { index, onTouchEnd = () => {} } = this.props;
+    event.preventDefault();
+    onTouchEnd(event, index);
+  };
+  handleMouseDown = (event) => {
+    const { index, onMouseDown = () => {} } = this.props;
+    onMouseDown(event, index);
+  };
+  handleClick = (event) => {
+    const { index, onClick = () => {} } = this.props;
+    if (onClick) {
+      event.preventDefault();
+      onClick(event, index);
+    }
+  };
+  handleDoubleClick = (event) => {
+    const { index, onDoubleClick = () => {} } = this.props;
+    if (onDoubleClick) {
+      event.preventDefault();
+      onDoubleClick(event, index);
+    }
+  };
+  setResizerRef = (resizer) => {
+    this.resizer = resizer || this.resizer;
+  };
+
   render() {
     const {
-      index,
-      split = 'vertical',
-      onClick = () => {},
-      onDoubleClick = () => {},
-      onMouseDown = () => {},
-      onTouchEnd = () => {},
-      onTouchStart = () => {},
+      split = 'vertical'
     } = this.props;
 
     const props = {
-      ref: _ => (this.resizer = _),
+      ref: this.setResizerRef,
       'data-attribute': split,
       'data-type': 'Resizer',
-      onMouseDown: event => onMouseDown(event, index),
-      onTouchStart: event => {
-        event.preventDefault();
-        onTouchStart(event, index);
-      },
-      onTouchEnd: event => {
-        event.preventDefault();
-        onTouchEnd(event, index);
-      },
-      onClick: event => {
-        if (onClick) {
-          event.preventDefault();
-          onClick(event, index);
-        }
-      },
-      onDoubleClick: event => {
-        if (onDoubleClick) {
-          event.preventDefault();
-          onDoubleClick(event, index);
-        }
-      },
+      onMouseDown: this.handleMouseDown,
+      onClick: this.handleClick,
+      onDoubleClick: this.handleDoubleClick
     };
 
     return split === 'vertical' ? (
-      <VerticalWrapper {...props} />
+      <VerticalWrapper { ...props } />
     ) : (
-      <HorizontalWrapper {...props} />
+      <HorizontalWrapper { ...props } />
     );
   }
 }
