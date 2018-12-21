@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 import prefixAll from 'inline-style-prefixer/static';
-import resolveArrayValue from 'css-in-js-utils/lib/resolveArrayValue';
 
 import { getUnit, convertSizeToCssValue } from './SplitPane';
 
@@ -13,7 +12,7 @@ function PaneStyle({
   minSize,
   maxSize,
   resizersSize,
-  styleQ: extraStyle
+  style: extraStyle
 }) {
   const value = size || initialSize;
   const vertical = split === 'vertical';
@@ -24,9 +23,7 @@ function PaneStyle({
   };
 
   let style = {
-    display: 'flex',
-    outline: 'none',
-    ...extraStyle
+    outline: 'none'
   };
 
   style[styleProp.minSize] = convertSizeToCssValue(minSize, resizersSize);
@@ -47,16 +44,11 @@ function PaneStyle({
 
   style = prefixAll(style);
 
-  style = Object.keys(style)
-    .filter((key) => style.hasOwnProperty(key))
-    .map((key) => {
-      let styleValue = style[key];
-      if (Array.isArray(styleValue)) {
-        styleValue = resolveArrayValue(key, styleValue);
-      }
-      return { [key]: styleValue };
-    })
-    .reduce((acc, x) => ({ ...acc, ...x }), {});
+  style = {
+    ...style,
+    display: 'flex',
+    ...extraStyle
+  };
 
   return style;
 }
@@ -86,14 +78,14 @@ Pane.propTypes = {
   initialSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   minSize: PropTypes.string,
   maxSize: PropTypes.string,
-  styleQ: PropTypes.shape()
+  style: PropTypes.shape()
 };
 
 Pane.defaultProps = {
   initialSize: '1',
   split: 'vertical',
   minSize: '0',
-  maxSize: '100%',
+  maxSize: '100%'
 };
 
 export default Pane;

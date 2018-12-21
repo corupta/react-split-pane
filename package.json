@@ -22,7 +22,6 @@
     "es6"
   ],
   "dependencies": {
-    "css-in-js-utils": "^3.0.0",
     "glamor": "^2.20.40",
     "glamorous": "^4.11.2",
     "inline-style-prefixer": "4.0.0",

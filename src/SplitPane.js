@@ -16,7 +16,7 @@ const ColumnStyle = glamorous.div({
   flex: 1,
   outline: 'none',
   overflow: 'hidden',
-  userSelect: 'text',
+  userSelect: 'text'
 });
 
 const RowStyle = glamorous.div({
@@ -26,7 +26,7 @@ const RowStyle = glamorous.div({
   flex: 1,
   outline: 'none',
   overflow: 'hidden',
-  userSelect: 'text',
+  userSelect: 'text'
 });
 
 function convert(str, size) {
@@ -39,25 +39,30 @@ function convert(str, size) {
 function toPx(value, unit = 'px', size) {
   switch (unit) {
     case '%': {
-      return +(size * value / 100).toFixed(2);
+      return Number((size * value / 100).toFixed(2));
     }
     case 'vw':
     case 'vh': {
-      return +(getViewWidthAndHeight()[unit] * value);
+      return Number(getViewWidthAndHeight()[unit] * value);
     }
     default: {
-      return +value;
+      return Number(value);
     }
   }
 }
 
 function removeNullChildren(children) {
-  return React.Children.toArray(children).filter(c => c);
+  return React.Children.toArray(children).filter((c) => c);
 }
 
 export function getUnit(size) {
   let res = 'ratio';
-  ['px', '%', 'vw', 'vh'].forEach(unit => {
+  [
+    'px',
+    '%',
+    'vw',
+    'vh'
+  ].forEach((unit) => {
     if (size.endsWith(unit)) {
       res = unit;
     }
@@ -69,7 +74,6 @@ export function convertSizeToCssValue(value, resizersSize) {
   if (getUnit(value) !== '%') {
     return value;
   }
-
   if (!resizersSize) {
     return value;
   }
@@ -79,7 +83,6 @@ export function convertSizeToCssValue(value, resizersSize) {
   if (percent === 0) {
     return value;
   }
-
   return `calc(${value} - ${resizersSize * percent}px)`;
 }
 
@@ -112,7 +115,7 @@ class SplitPane extends Component {
     super(props);
 
     this.state = {
-      sizes: this.getPanePropSize(props),
+      sizes: this.getPanePropSize(props)
     };
   }
 
@@ -174,13 +177,13 @@ class SplitPane extends Component {
     }
   };
 
-  onMouseMove = event => {
+  onMouseMove = (event) => {
     event.preventDefault();
 
     this.onMove(event.clientX, event.clientY);
   };
 
-  onTouchMove = event => {
+  onTouchMove = (event) => {
     event.preventDefault();
 
     const { clientX, clientY } = event.touches[0];
@@ -188,7 +191,7 @@ class SplitPane extends Component {
     this.onMove(clientX, clientY);
   };
 
-  onMouseUp = event => {
+  onMouseUp = (event) => {
     event.preventDefault();
 
     const opts = supportsPassiveEvent ? { passive: false } : false;
@@ -215,15 +218,15 @@ class SplitPane extends Component {
     const resizersSize = this.getResizersSize(
       removeNullChildren(this.props.children)
     );
-    const splitPaneSizePx =
-      split === 'vertical'
+    const splitPaneSizePx
+      = split === 'vertical'
         ? splitPaneDimensions.width - resizersSize
         : splitPaneDimensions.height - resizersSize;
 
-    const minSizesPx = minSizes.map(s => convert(s, splitPaneSizePx));
-    const maxSizesPx = maxSizes.map(s => convert(s, splitPaneSizePx));
+    const minSizesPx = minSizes.map((s) => convert(s, splitPaneSizePx));
+    const maxSizesPx = maxSizes.map((s) => convert(s, splitPaneSizePx));
     const sizesPx = paneDimensions.map(
-      d => (split === 'vertical' ? d.width : d.height)
+      (d) => (split === 'vertical' ? d.width : d.height)
     );
 
     return {
@@ -232,38 +235,36 @@ class SplitPane extends Component {
       splitPaneSizePx,
       minSizesPx,
       maxSizesPx,
-      sizesPx,
+      sizesPx
     };
   }
 
   getPanePropSize(props) {
-    return removeNullChildren(props.children).map(child => {
-      const value = child.props['size'] || child.props['initialSize'];
+    return removeNullChildren(props.children).map((child) => {
+      const value = child.props.size || child.props.initialSize;
       if (value === undefined) {
         return DEFAULT_PANE_SIZE;
       }
-
       return String(value);
     });
   }
 
   getPanePropMinMaxSize(props, key) {
-    return removeNullChildren(props.children).map(child => {
+    return removeNullChildren(props.children).map((child) => {
       const value = child.props[key];
       if (value === undefined) {
         return key === 'maxSize'
           ? DEFAULT_PANE_MAX_SIZE
           : DEFAULT_PANE_MIN_SIZE;
       }
-
       return value;
     });
   }
 
   getPaneDimensions() {
     return this.paneElements
-      .filter(el => el)
-      .map(el => el.getBoundingClientRect());
+      .filter((el) => el)
+      .map((el) => el.getBoundingClientRect());
   }
 
   getSizes() {
@@ -278,7 +279,7 @@ class SplitPane extends Component {
       minSizesPx,
       maxSizesPx,
       splitPaneSizePx,
-      paneDimensions,
+      paneDimensions
     } = this.dimensionsSnapshot;
 
     const sizeDim = split === 'vertical' ? 'width' : 'height';
@@ -291,8 +292,8 @@ class SplitPane extends Component {
     const primaryMaxSizePx = Math.min(maxSizesPx[resizerIndex], maxSize);
     const secondaryMaxSizePx = Math.min(maxSizesPx[resizerIndex + 1], maxSize);
 
-    const moveOffset =
-      split === 'vertical'
+    const moveOffset
+      = split === 'vertical'
         ? this.startClientX - clientX
         : this.startClientY - clientY;
 
@@ -309,7 +310,6 @@ class SplitPane extends Component {
       primarySizePx = primaryMaxSizePx;
       primaryHasReachedLimit = true;
     }
-
     if (secondarySizePx < secondaryMinSizePx) {
       secondarySizePx = secondaryMinSizePx;
       secondaryHasReachedLimit = true;
@@ -317,7 +317,6 @@ class SplitPane extends Component {
       secondarySizePx = secondaryMaxSizePx;
       secondaryHasReachedLimit = true;
     }
-
     if (primaryHasReachedLimit) {
       secondarySizePx = primary[sizeDim] + secondary[sizeDim] - primarySizePx;
     } else if (secondaryHasReachedLimit) {
@@ -353,7 +352,6 @@ class SplitPane extends Component {
 
           return convertToUnit(sizesPx[idx], 'ratio');
         }
-
         return size;
       });
 
@@ -365,7 +363,7 @@ class SplitPane extends Component {
     onChange && onChange(sizes);
 
     this.setState({
-      sizes,
+      sizes
     });
   }
 
@@ -394,46 +392,48 @@ class SplitPane extends Component {
       const paneProps = {
         index: idx,
         'data-type': 'Pane',
-        split: split,
+        split,
         key: `Pane-${idx}`,
         innerRef: this.setPaneRef,
         resizersSize,
-        size: sizes[idx],
+        size: sizes[idx]
       };
 
       if (isPane) {
         pane = cloneElement(child, paneProps);
       } else {
-        pane = <Pane {...paneProps}>{child}</Pane>;
+        pane = <Pane { ...paneProps }>{child}</Pane>;
       }
-
       if (acc.length === 0) {
         return [...acc, pane];
-      } else {
-        const resizer = (
-          <Resizer
-            index={resizerIndex}
-            key={`Resizer-${resizerIndex}`}
-            split={split}
-            onMouseDown={this.onMouseDown}
-            onTouchStart={this.onTouchStart}
-          />
-        );
-
-        return [...acc, resizer, pane];
       }
+      const resizer = (
+        <Resizer
+          index={ resizerIndex }
+          key={ `Resizer-${resizerIndex}` }
+          split={ split }
+          onMouseDown={ this.onMouseDown }
+          onTouchStart={ this.onTouchStart }
+        />
+      );
+
+      return [
+        ...acc,
+        resizer,
+        pane
+      ];
     }, []);
 
     const StyleComponent = split === 'vertical' ? RowStyle : ColumnStyle;
 
     return (
       <StyleComponent
-        className={className}
-        data-type="SplitPane"
-        data-split={split}
-        innerRef={el => {
+        className={ className }
+        data-type='SplitPane'
+        data-split={ split }
+        innerRef={ (el) => {
           this.splitPane = el;
-        }}
+        } }
       >
         {elements}
       </StyleComponent>
@@ -448,13 +448,13 @@ SplitPane.propTypes = {
   resizerSize: PropTypes.number,
   onChange: PropTypes.func,
   onResizeStart: PropTypes.func,
-  onResizeEnd: PropTypes.func,
+  onResizeEnd: PropTypes.func
 };
 
 SplitPane.defaultProps = {
   split: 'vertical',
   resizerSize: 1,
-  allowResize: true,
+  allowResize: true
 };
 
 export default SplitPane;
