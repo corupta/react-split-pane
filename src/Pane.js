@@ -12,6 +12,7 @@ function PaneStyle({
   minSize,
   maxSize,
   resizersSize,
+  style: extraStyle
 }) {
   const value = size || initialSize;
   const vertical = split === 'vertical';
@@ -24,6 +25,7 @@ function PaneStyle({
   let style = {
     display: 'flex',
     outline: 'none',
+    ...extraStyle
   };
 
   style[styleProp.minSize] = convertSizeToCssValue(minSize, resizersSize);
