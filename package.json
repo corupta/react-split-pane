@@ -22,9 +22,10 @@
     "es6"
   ],
   "dependencies": {
+    "css-in-js-utils": "^3.0.0",
     "glamor": "^2.20.40",
     "glamorous": "^4.11.2",
-    "inline-style-prefixer": "^4.0.0",
+    "inline-style-prefixer": "4.0.0",
     "normalize.css": "^7.0.0",
     "prop-types": "^15.6.0",
     "react": "^16.3.0",
@@ -32,6 +33,9 @@
     "styled-components": "^4.1.3"
   },
   "devDependencies": {
+    "@storybook/addon-actions": "^3.3.3",
+    "@storybook/addon-links": "^3.3.3",
+    "@storybook/react": "^3.3.3",
     "babel-cli": "^6.26.0",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-object-assign": "^6.22.0",
@@ -53,10 +57,7 @@
     "sinon": "^5.0.7",
     "surge": "^0.19.0",
     "typescript": "^2.6.2",
-    "watchify": "^3.9.0",
-    "@storybook/react": "^3.3.3",
-    "@storybook/addon-actions": "^3.3.3",
-    "@storybook/addon-links": "^3.3.3"
+    "watchify": "^3.9.0"
   },
   "scripts": {
     "compile": "babel -d lib/ src/",

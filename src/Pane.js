@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 import prefixAll from 'inline-style-prefixer/static';
+import resolveArrayValue from 'css-in-js-utils/lib/resolveArrayValue';
 
 import { getUnit, convertSizeToCssValue } from './SplitPane';
 
@@ -12,14 +13,14 @@ function PaneStyle({
   minSize,
   maxSize,
   resizersSize,
-  style: extraStyle
+  styleQ: extraStyle
 }) {
   const value = size || initialSize;
   const vertical = split === 'vertical';
   const styleProp = {
     minSize: vertical ? 'minWidth' : 'minHeight',
     maxSize: vertical ? 'maxWidth' : 'maxHeight',
-    size: vertical ? 'width' : 'height',
+    size: vertical ? 'width' : 'height'
   };
 
   let style = {
@@ -44,20 +45,33 @@ function PaneStyle({
       break;
   }
 
+  style = prefixAll(style);
+
+  style = Object.keys(style)
+    .filter((key) => style.hasOwnProperty(key))
+    .map((key) => {
+      let styleValue = style[key];
+      if (Array.isArray(styleValue)) {
+        styleValue = resolveArrayValue(key, styleValue);
+      }
+      return { [key]: styleValue };
+    })
+    .reduce((acc, x) => ({ ...acc, ...x }), {});
+
   return style;
 }
 
 class Pane extends PureComponent {
-  setRef = element => {
+  setRef = (element) => {
     this.props.innerRef(this.props.index, element);
   };
 
   render() {
     const { children, className } = this.props;
-    const prefixedStyle = prefixAll(PaneStyle(this.props));
+    const prefixedStyle = PaneStyle(this.props);
 
     return (
-      <div className={className} style={prefixedStyle} ref={this.setRef}>
+      <div className={ className } style={ prefixedStyle } ref={ this.setRef }>
         {children}
       </div>
     );
@@ -72,6 +86,7 @@ Pane.propTypes = {
   initialSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   minSize: PropTypes.string,
   maxSize: PropTypes.string,
+  styleQ: PropTypes.shape()
 };
 
 Pane.defaultProps = {

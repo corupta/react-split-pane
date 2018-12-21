@@ -80,7 +80,7 @@ export function convertSizeToCssValue(value, resizersSize) {
     return value;
   }
 
-  return `calc(${value} - ${resizersSize}px*${percent})`;
+  return `calc(${value} - ${resizersSize * percent}px)`;
 }
 
 function getViewWidthAndHeight() {
